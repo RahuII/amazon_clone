@@ -1,9 +1,13 @@
 import 'package:amazon_clone/common/widgets/custom_button.dart';
 import 'package:amazon_clone/common/widgets/custom_textfield.dart';
 import 'package:amazon_clone/constants/global_variable.dart';
+import 'package:amazon_clone/features/auth/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
-enum Auth { signUp, signIn }
+enum Auth {
+  signin,
+  signup,
+}
 
 class AuthScreen extends StatefulWidget {
   static const String routeName = '/auth-screen';
@@ -14,9 +18,10 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  Auth _auth = Auth.signUp;
+  Auth _auth = Auth.signup;
   final _signUpFormKey = GlobalKey<FormState>();
   final _signInFormKey = GlobalKey<FormState>();
+  final AuthService authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -24,10 +29,27 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   void dispose() {
     super.dispose();
-    _passwordController.dispose();
     _emailController.dispose();
+    _passwordController.dispose();
     _nameController.dispose();
   }
+
+  void signUpUser() {
+    authService.signUpUser(
+      context: context,
+      email: _emailController.text,
+      password: _passwordController.text,
+      name: _nameController.text,
+    );
+  }
+
+  // void signInUser() {
+  //   authService.signInUser(
+  //     context: context,
+  //     email: _emailController.text,
+  //     password: _passwordController.text,
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -35,19 +57,19 @@ class _AuthScreenState extends State<AuthScreen> {
       backgroundColor: GlobalVariables.greyBackgroundCOlor,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Welcome",
+                'Welcome',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               ListTile(
-                tileColor: _auth == Auth.signUp
+                tileColor: _auth == Auth.signup
                     ? GlobalVariables.backgroundColor
                     : GlobalVariables.greyBackgroundCOlor,
                 title: const Text(
@@ -58,7 +80,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
                 leading: Radio(
                   activeColor: GlobalVariables.secondaryColor,
-                  value: Auth.signUp,
+                  value: Auth.signup,
                   groupValue: _auth,
                   onChanged: (Auth? val) {
                     setState(() {
@@ -67,9 +89,9 @@ class _AuthScreenState extends State<AuthScreen> {
                   },
                 ),
               ),
-              if (_auth == Auth.signUp)
+              if (_auth == Auth.signup)
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(8),
                   color: GlobalVariables.backgroundColor,
                   child: Form(
                     key: _signUpFormKey,
@@ -91,8 +113,12 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                         const SizedBox(height: 10),
                         CustomButton(
-                          text: "Sign Up",
-                          onPressed: () {},
+                          text: 'Sign Up',
+                          onPressed: () {
+                            if (_signUpFormKey.currentState!.validate()) {
+                              signUpUser();
+                            }
+                          },
                         )
                       ],
                     ),
@@ -107,7 +133,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
                 leading: Radio(
                   activeColor: GlobalVariables.secondaryColor,
-                  value: Auth.signIn,
+                  value: Auth.signin,
                   groupValue: _auth,
                   onChanged: (Auth? val) {
                     setState(
@@ -118,7 +144,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   },
                 ),
               ),
-              if (_auth == Auth.signIn)
+              if (_auth == Auth.signin)
                 Container(
                   padding: const EdgeInsets.all(12),
                   color: GlobalVariables.backgroundColor,
