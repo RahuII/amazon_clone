@@ -1,8 +1,10 @@
-import 'package:amazon_clone/common/widgets/custom_button.dart';
-import 'package:amazon_clone/common/widgets/custom_textfield.dart';
 import 'package:amazon_clone/constants/global_variable.dart';
 import 'package:amazon_clone/features/auth/services/auth_service.dart';
 import 'package:flutter/material.dart';
+
+import '../../../common/widgets/custom_button.dart';
+import '../../../common/widgets/custom_textfield.dart';
+
 
 enum Auth {
   signin,
@@ -43,13 +45,13 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  // void signInUser() {
-  //   authService.signInUser(
-  //     context: context,
-  //     email: _emailController.text,
-  //     password: _passwordController.text,
-  //   );
-  // }
+  void signInUser() {
+    authService.signInUser(
+      context: context,
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,8 +127,11 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ),
               ListTile(
+                tileColor: _auth == Auth.signin
+                    ? GlobalVariables.backgroundColor
+                    : GlobalVariables.greyBackgroundCOlor,
                 title: const Text(
-                  'Sign-In',
+                  'Sign-In.',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -136,23 +141,20 @@ class _AuthScreenState extends State<AuthScreen> {
                   value: Auth.signin,
                   groupValue: _auth,
                   onChanged: (Auth? val) {
-                    setState(
-                      () {
-                        _auth = val!;
-                      },
-                    );
+                    setState(() {
+                      _auth = val!;
+                    });
                   },
                 ),
               ),
               if (_auth == Auth.signin)
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(8),
                   color: GlobalVariables.backgroundColor,
                   child: Form(
-                    key: _signUpFormKey,
+                    key: _signInFormKey,
                     child: Column(
                       children: [
-                        const SizedBox(height: 10),
                         CustomTextField(
                           controller: _emailController,
                           hintText: 'Email',
@@ -164,8 +166,12 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                         const SizedBox(height: 10),
                         CustomButton(
-                          text: "Sign In",
-                          onPressed: () {},
+                          text: 'Sign In',
+                          onPressed: () {
+                            if (_signInFormKey.currentState!.validate()) {
+                              signInUser();
+                            }
+                          },
                         )
                       ],
                     ),
